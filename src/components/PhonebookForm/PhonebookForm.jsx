@@ -1,27 +1,38 @@
 import css from './PhonebookForm.module.css';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { add } from '../../redux/sliceContact';
 
-export const PhonebookForm = ({ addContacts }) => {
-  const [value, setValue] = useState({
-    name: '',
-    number: '',
-  });
+export const PhonebookForm = () => {
+  const dispatch = useDispatch();
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    addContacts(value);
-    reset();
-  };
-
-  const handleChange = ({ target: { value, name } }) => {
-    setValue(prev => ({ ...prev, [name]: value }));
+  const handleChange = e => {
+    const { name, value } = e.target;
+    name === 'name' ? setName(value) : setNumber(value);
   };
 
   const reset = () => {
-    setValue({ name: '', number: '' });
+    setName('');
+    setNumber('');
   };
 
-  const { name, number } = value;
+  const contacts = useSelector(state => state.contacts);
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (
+      contacts.some(
+        value => value.name.toLocaleLowerCase() === name.toLocaleLowerCase()
+      )
+    ) {
+      alert(`${name} is alredy in contacts`);
+    } else {
+      dispatch(add({ name, number }));
+    }
+    reset();
+  };
 
   return (
     <form className={css.form} type="submit" onSubmit={handleSubmit}>
@@ -43,7 +54,7 @@ export const PhonebookForm = ({ addContacts }) => {
           name="number"
           type="tel"
           onChange={handleChange}
-          pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
           value={number}

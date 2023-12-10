@@ -1,12 +1,29 @@
-import { Contacts } from '../Contact/Contacts';
 import css from './ContactsList.module.css';
+import { useDispatch } from 'react-redux';
+import { remove } from '../../redux/sliceContact';
 
-export const ContactsList = ({ contacts, deleteContacts }) => {
-  return (
-    <ul className={css.contacts}>
-      {contacts.map(el => (
-        <Contacts key={el.id} contacts={el} deleteContacts={deleteContacts} />
-      ))}
-    </ul>
-  );
+export const ContactsList = ({ listContact }) => {
+  const dispatch = useDispatch();
+
+  return listContact.map(cont => {
+    const deleteContacts = id => {
+      dispatch(remove(id));
+    };
+    return (
+      <ul key={cont.id} className={css.contacts}>
+        <span>
+          {cont.name}: {cont.number}
+        </span>
+        <button
+          className={css.btn}
+          type="button"
+          onClick={() => {
+            deleteContacts(cont.id);
+          }}
+        >
+          Delete
+        </button>
+      </ul>
+    );
+  });
 };
