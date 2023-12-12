@@ -2,11 +2,13 @@ import css from './PhonebookForm.module.css';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { add } from '../../redux/sliceContact';
+import { getContacts } from '../../redux/selectors';
 
 export const PhonebookForm = () => {
   const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const contacts = useSelector(getContacts);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -17,8 +19,6 @@ export const PhonebookForm = () => {
     setName('');
     setNumber('');
   };
-
-  const contacts = useSelector(state => state.contacts);
 
   const handleSubmit = e => {
     e.preventDefault();
